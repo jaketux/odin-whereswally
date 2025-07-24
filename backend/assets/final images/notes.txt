@@ -1,0 +1,94 @@
+
+
+
+
+
+
+leftCharacter
+rightCharacter
+topCharacter
+bottomCharacter
+
+
+
+
+
+sessions
+
+get for start
+post for finish 
+
+on the frontend we can 
+
+
+
+
+model Map {
+  id                Int           @id @default(autoincrement())
+  name              String
+  mapImage          String
+  mapTagline        String
+  mapDescription    String
+  characters        Character[]
+  coordinatesWally  Json? //[left, right, top, bottom]
+  coordinatesWoof   Json?
+  coordinatesWizard Json?
+  coordinatesOdlaw  Json?
+  coordinatesWenda  Json?
+  gameSessions      GameSession[]
+}
+
+model Character {
+  id             Int    @id @default(autoincrement())
+  name           String
+  characterImage String
+  coordinates    Json?
+  map            Map    @relation(fields: [mapId], references: [id])
+  mapId          Int
+}
+
+model GameSession {
+  id        String    @id @default(cuid())
+  startTime DateTime  @default(now())
+  endTime   DateTime?
+  username  String?   @default("Anonymous")
+  completed Boolean   @default(false)
+  map       Map       @relation(fields: [mapId], references: [id])
+  mapId     Int
+}
+
+
+
+
+
+
+Ali Baba and the Forty Thieves - https://www.deviantart.com/where-is-waldo-wally/art/Where-s-Waldo-In-Hollywood-Book-4-Scene-6-462460215
+Find Waldo top 210, left 711, bottom 261, right 745 
+
+Horseplay at Troy - https://www.deviantart.com/where-is-waldo-wally/art/Where-s-Waldo-In-Hollywood-Book-4-Scene-3-462460774
+Find Waldo top 410, left 320, bottom 470, right 370 
+
+The Knights of the Magic Flag - https://www.deviantart.com/where-is-waldo-wally/art/Where-s-Waldo-The-Fantastic-Journey-Book-3-S9-462413726
+Find Waldo top 245, left 445, bottom 325, right  495
+Odlaw top 345, left 55, bottom 405, right 105 
+
+Department Store - https://www.deviantart.com/where-is-waldo-wally/art/Where-s-Waldo-Book-1-Scene-11-789866465
+Find Waldo top 155, left 200, bottom 225, right 260 
+Woof top 520, left 555, bottom 550, right 595 
+Wizard top 2, left 675, bottom 65, right 720 
+
+Deep Sea Divers - https://www.deviantart.com/where-is-waldo-wally/art/Where-s-Waldo-The-Fantastic-Journey-Book-3-S8-462413822
+Find Waldo top 152, left 506, bottom 217, right 550
+Woof top 335, left 1117, bottom 381, right 1159 
+Wizard top 110, left 777, bottom 181, right 830 
+Wenda   top 268, left 181, bottom 340, right 235 
+
+Dinosaurs, Spacemen and Ghouls - https://www.deviantart.com/where-is-waldo-wally/art/Where-s-Waldo-In-Hollywood-Book-4-Scene-9-462459487
+Find Waldo  top 135, left 1061, bottom 190, right 1107
+Woof top 618, left 820, bottom 650, right 865
+Wizard top 360, left 520, bottom 420, right 580 
+Wenda   top 165, left 870, bottom 212, right 915
+
+
+
+
