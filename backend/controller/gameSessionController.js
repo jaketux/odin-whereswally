@@ -1,3 +1,5 @@
+const prisma = require("../prisma.ts");
+
 async function startSession(req, res) {
   try {
     const { mapId } = req.body;
@@ -20,7 +22,7 @@ async function endSession(req, res) {
   try {
     const { gameSessionId, endTime, username, mapId } = req.body;
 
-    const existingGameSession = await pprisma.gameSession.findUnique({
+    const existingGameSession = await prisma.gameSession.findUnique({
       where: {
         id: gameSessionId,
       },

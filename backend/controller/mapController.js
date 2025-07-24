@@ -1,3 +1,5 @@
+const prisma = require("../prisma");
+
 async function getMaps(req, res) {
   try {
     const maps = await prisma.map.findMany({
