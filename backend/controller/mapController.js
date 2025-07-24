@@ -1,4 +1,4 @@
-const prisma = require("../prisma");
+const prisma = require("../prisma.ts");
 
 async function getMaps(req, res) {
   try {
