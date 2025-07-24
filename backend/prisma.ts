@@ -13,7 +13,7 @@ async function main() {
       mapImage:
         "https://izyatngyyeoiexwfghkw.supabase.co/storage/v1/object/public/maps//waldo%20ali%20barbar%20resized.jpeg",
       mapTagline: "Find Wally in the packed cave amidst the pots of treasure.",
-      coordinatesWally: [7111, 745, 210, 261],
+      coordinatesWally: [711, 745, 210, 261],
       //[left, right, top, bottom]
       coordinatesWoof: null,
       coordinatesWizard: null,
