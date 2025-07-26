@@ -1,5 +1,4 @@
 #root {
-  background-color: lightblue;
   width: 1440px;
   display: flex;
   justify-content: center;
@@ -35,6 +34,7 @@ li:hover {
   font-size: 24px;
   width: 100%;
   font-weight: 700;
+  background-color: lightblue;
 }
 
 .header-nav-left {
@@ -54,4 +54,166 @@ li:hover {
 .header-img {
   height: 100px;
   width: 50%;
+}
+
+.map-select {
+  background: white;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.map-select-subheading {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 40px 0px;
+}
+
+.map-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  column-gap: 50px;
+  row-gap: 30px;
+  margin-bottom: 50px;
+}
+
+.map-card {
+  display: flex;
+  flex-direction: column;
+  width: 450px;
+  height: 350px;
+  border: 1px solid black;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.map-card:hover {
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  transform: scale(1.02);
+}
+
+.map-card-top {
+  width: 450px;
+  height: 70%;
+  overflow: hidden;
+}
+
+.map-image {
+  width: 450px;
+
+  border-radius: 10px;
+}
+
+.map-card-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 50%;
+}
+
+.map-title {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.map-characters {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 300px;
+}
+
+.character-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.character-img {
+  height: 55px;
+  border-radius: 50%;
+  border: 1px solid black;
+}
+
+.game-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.game-heading {
+  margin: 20px 0px;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.game-tagline {
+  margin-bottom: 20px;
+}
+
+.game-characters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 200px;
+  margin-bottom: 20px;
+}
+
+.notfound {
+  background-color: lightcoral;
+}
+
+.found {
+  background-color: lightgreen;
+}
+
+.start-btn {
+  background-color: #0095ff;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  box-shadow: rgba(255, 255, 255, 0.4) 0 1px 0 0 inset;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: -apple-system, system-ui, "Segoe UI", "Liberation Sans",
+    sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.15385;
+  margin: 0;
+  outline: none;
+  padding: 8px 0.8em;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  white-space: nowrap;
+  margin-bottom: 20px;
+  width: 125px;
+}
+
+.start-btn:hover,
+.start-btn:focus {
+  background-color: #07c;
+}
+
+.start-btn:focus {
+  box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
+}
+
+.start-btn:active {
+  background-color: #0064bd;
+  box-shadow: none;
 }

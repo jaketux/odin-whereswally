@@ -1,10 +1,10 @@
 import WheresWallyHeader from "../src/assets/header-img.png";
 
-export default function Header() {
+export default function Header(props) {
   return (
     <div className="header">
       <ul className="header-nav-left">
-        <li>Home</li>
+        <li onClick={() => props.returnHome()}>Home</li>
         <li>Instructions</li>
       </ul>
       <img src={WheresWallyHeader} className="header-img" />
