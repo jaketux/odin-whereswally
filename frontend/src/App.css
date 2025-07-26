@@ -1,6 +1,6 @@
 #root {
   background-color: lightblue;
-  width: 65%;
+  width: 1440px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -11,14 +11,47 @@ body {
   margin: 0;
   display: flex;
   justify-content: center;
+  font-family: "Roboto", sans-serif;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+li:first-child {
+  margin-right: 40px;
+}
+
+li:hover {
+  text-decoration: underline;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
+  font-size: 24px;
+  width: 100%;
+  font-weight: 700;
+}
+
+.header-nav-left {
+  display: flex;
+  justify-content: flex-end;
+  width: 25%;
+  margin-right: 40px;
+}
+
+.header-nav-right {
+  display: flex;
+  justify-content: flex-start;
+  width: 25%;
+  margin-left: 40px;
 }
 
 .header-img {
-  height: 80px;
+  height: 100px;
+  width: 50%;
 }

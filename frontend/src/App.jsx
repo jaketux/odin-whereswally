@@ -1,21 +1,43 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import WheresWallyHeader from "./assets/header-img.png";
+import Header from "../Components/Header";
 
 function App() {
   const [count, setCount] = useState(0);
 
+  const [refreshCounter, setRefreshCounter] = useState(0);
+
+  const [mapStorage, setMapStorage] = useState([]);
+
+  const [currentError, setCurrentError] = useState(false);
+
+  const [errorInView, setErrorInView] = useState(null);
+
+  useEffect(() => {
+    fetch("http://wheres-wally-node-backend-production.up.railway.app/map", {
+      method: "GET",
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          setCurrentError(true);
+          setErrorInView(data.message);
+          console.log("Error received when fetching data: " + data.message);
+          return;
+        }
+        setMapStorage(data);
+        console.log({ ...data });
+      })
+      .catch((error) => {
+        setCurrentError(true);
+        setErrorInView(error);
+      });
+  }, [refreshCounter]);
+
   return (
-    <div className="header">
-      <div className="left-nav">
-        <div>Home</div>
-        <div>Instructions</div>
-      </div>
-      <img src={WheresWallyHeader} className="header-img" />
-      <div className="right-nav">
-        <div>Scoreboard</div>
-      </div>
-    </div>
+    <>
+      <Header />
+    </>
   );
 }
 
