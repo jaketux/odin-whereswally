@@ -57,12 +57,12 @@ export default function Game(props) {
   }, [isRunning]);
 
   function handleStartGame() {
-    fetch(
-      `http://wheres-wally-node-backend-production.up.railway.app/game/${props.mapInView.id}`,
-      {
-        method: "POST",
-      }
-    )
+    fetch("http://wheres-wally-node-backend-production.up.railway.app/game", {
+      method: "POST",
+      body: JSON.stringify({
+        mapId: props.mapInView.id,
+      }),
+    })
       .then(async (res) => {
         const data = await res.json();
         if (!res.ok) {
