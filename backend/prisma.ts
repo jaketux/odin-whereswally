@@ -3,6 +3,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.gameSession.deleteMany();
   await prisma.character.deleteMany();
   await prisma.map.deleteMany();
 
