@@ -16,6 +16,8 @@ export default function Game(props) {
 
   const [hoveredCharacter, setHoveredCharacter] = useState(null);
 
+  const [currentGameSessionId, setCurrentGameSessionId] = useState(null);
+
   const [gameFinishsed, setGameFinished] = useState(false);
 
   //instructions modal appears once game is selected showing instructions for the game.
@@ -57,10 +59,15 @@ export default function Game(props) {
   }, [isRunning]);
 
   function handleStartGame() {
-    fetch("http://wheres-wally-node-backend-production.up.railway.app/game", {
+    const mapId = props.mapInView.id;
+
+    fetch("https://wheres-wally-node-backend-production.up.railway.app/game", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        mapId: props.mapInView.id,
+        mapId: mapId,
       }),
     })
       .then(async (res) => {
@@ -73,6 +80,7 @@ export default function Game(props) {
         }
         setIsRunning(true);
         setGameStart(true);
+        setCurrentGameSessionId(data.id);
         console.log({ ...data });
       })
       .catch((error) => {
