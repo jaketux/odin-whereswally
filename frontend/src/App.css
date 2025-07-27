@@ -148,24 +148,61 @@ li:hover {
   justify-content: center;
   align-items: center;
 }
+
 .game-heading {
-  margin: 20px 0px;
+  margin: 10px 0px;
   font-size: 32px;
   font-weight: 700;
   text-align: center;
 }
 
 .game-tagline {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.game-characters {
+.game-control {
+  display: flex;
+  text-align: center;
+  height: 80px;
+  font-weight: 700;
+  gap: 20px;
+}
+
+.game-clock,
+.game-pause {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 200px;
-  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.game-timer-time {
+  margin-left: 5px;
+}
+
+.small-btn-img {
+  height: 50px;
+}
+
+.game-characters-heading {
+  margin-bottom: 10px;
+}
+
+.game-characters-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 20px;
+}
+
+.game-endgame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-endgame > button {
+  margin-bottom: 0;
 }
 
 .notfound {
@@ -176,14 +213,13 @@ li:hover {
   background-color: lightgreen;
 }
 
-.start-btn {
+.start-btn,
+.end-btn {
   background-color: #0095ff;
   border: 1px solid transparent;
   border-radius: 5px;
   box-shadow: rgba(255, 255, 255, 0.4) 0 1px 0 0 inset;
   box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
   display: inline-block;
   font-family: -apple-system, system-ui, "Segoe UI", "Liberation Sans",
     sans-serif;
@@ -206,15 +242,19 @@ li:hover {
 }
 
 .start-btn:hover,
-.start-btn:focus {
+.start-btn:focus,
+.end-btn:hover,
+.end-btn:focus {
   background-color: #07c;
 }
 
-.start-btn:focus {
+.start-btn:focus,
+.end-btn:focus {
   box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
 }
 
-.start-btn:active {
+.start-btn:active,
+.end-btn:active {
   background-color: #0064bd;
   box-shadow: none;
 }

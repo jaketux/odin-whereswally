@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
+import PauseBtn from "../src/assets/pause-button.png";
+import Stopwatch from "../src/assets/stopwatch.png";
+import Stopbutton from "../src/assets/stop.png";
 
 export default function Game(props) {
   const [gameStart, setGameStart] = useState(false);
   const [gameTimer, setGameTimer] = useState(null);
+  const [formattedTimer, setFormattedTimer] = useState("0:00");
+
   const [isRunning, setIsRunning] = useState(false);
   const [charactersLoaded, setCharactersLoaded] = useState(false);
   const [characterSet, setCharacterSet] = useState(null);
@@ -57,6 +62,19 @@ export default function Game(props) {
       }
     };
   }, [isRunning]);
+
+  useEffect(() => {
+    if (isRunning) {
+      const minutes = Math.floor(gameTimer / 60);
+      const seconds = gameTimer % 60;
+
+      const formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
+
+      setFormattedTimer(`${minutes}:${formattedSeconds}`);
+    }
+
+    return () => {};
+  }, [gameTimer]);
 
   function handleStartGame() {
     const mapId = props.mapInView.id;
@@ -143,6 +161,10 @@ export default function Game(props) {
     //show winner modal, including final time, opportunity for person to enter in their name for score
   }
 
+  function handleStopGame() {
+    return;
+  }
+
   function handleSubmit(character) {
     let coordinates;
     if (character.name === "Wally") {
@@ -158,20 +180,10 @@ export default function Game(props) {
       //[left, right, top, bottom]
     }
 
-    console.log(character.name);
-    console.log(coordinates);
     let leftSideBox = userGuessPosition.x - 25;
     let rightSideBox = userGuessPosition.x + 25;
     let topSideBox = userGuessPosition.y - 25;
     let bottomSideBox = userGuessPosition.y + 25;
-
-    console.log(leftSideBox);
-
-    console.log(rightSideBox);
-
-    console.log(topSideBox);
-
-    console.log(bottomSideBox);
 
     if (
       leftSideBox < coordinates[1] &&
@@ -179,12 +191,9 @@ export default function Game(props) {
       topSideBox < coordinates[3] &&
       bottomSideBox > coordinates[2]
     ) {
-      console.log("Character found!");
-
       const updatedCharacters = characterSet.map((char) =>
         char.id === character.id ? { ...char, isFound: true } : char
       );
-
       setCharacterSet(updatedCharacters);
       console.log(updatedCharacters);
       setCursorPosition(null);
@@ -198,7 +207,6 @@ export default function Game(props) {
 
   return (
     <div className="game-box">
-      <div>Device pixel ratio is currently {windowZoom}</div>
       <div className="game-heading">{props.mapInView.name}</div>
       <div className="game-tagline">{props.mapInView.mapTagline}</div>
       {!gameStart && (
@@ -207,25 +215,37 @@ export default function Game(props) {
         </button>
       )}
       {gameStart && (
-        <div className="game-characters">
-          {charactersLoaded &&
-            characterSet.map((character) => {
-              return (
-                <div className="game-character" key={character.id}>
-                  <div className="character-icon">
-                    <img
-                      className={
-                        character.isFound
-                          ? "character-img found"
-                          : "character-img notfound"
-                      }
-                      src={character.characterImage}
-                      alt="Image of Character"
-                    />
+        <div className="game-control">
+          <div className="game-characters-box">
+            {charactersLoaded &&
+              characterSet.map((character) => {
+                return (
+                  <div className="game-character" key={character.id}>
+                    <div className="character-icon">
+                      <img
+                        className={
+                          character.isFound
+                            ? "character-img found"
+                            : "character-img notfound"
+                        }
+                        src={character.characterImage}
+                        alt="Image of Character"
+                      />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+          </div>
+          <div className="game-clock">
+            <img src={Stopwatch} alt="Stopwatch" className="small-btn-img" />
+            <div className="game-timer-time">{formattedTimer}</div>
+          </div>
+          <div className="game-pause">
+            <img src={PauseBtn} alt="Pause Button" className="small-btn-img" />
+          </div>
+          <div className="game-endgame">
+            <img src={Stopbutton} alt="Stop button" className="small-btn-img" />
+          </div>
         </div>
       )}
 
@@ -237,6 +257,7 @@ export default function Game(props) {
           onClick={handleClick}
         />
       </div>
+
       {selectionIsVisible && (
         <>
           <div
