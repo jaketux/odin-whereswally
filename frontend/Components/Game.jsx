@@ -3,13 +3,12 @@ import { useState, useEffect } from "react";
 export default function Game(props) {
   const [gameStart, setGameStart] = useState(false);
   const [gameTimer, setGameTimer] = useState(null);
+  const [isRunning, setIsRunning] = useState(false);
   const [charactersLoaded, setCharactersLoaded] = useState(false);
   const [characterSet, setCharacterSet] = useState(null);
-  const [foundCharacters, setFoundCharacters] = useState([]);
   const [windowZoom, setWindowZoom] = useState(null);
 
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const [scaledPosition, setScaledPosition] = useState({ x: 0, y: 0 });
 
   const [userGuessPosition, setUserGuessPosition] = useState({ x: 0, y: 0 });
 
@@ -33,12 +32,7 @@ export default function Game(props) {
 
   //handle ending of game session with fetch put request.
 
-  //build logic for finding correct moves. handle whether timer is stopped while move is considered, how this is conveyed to user.
-
-  if (
-    !characterSet &&
-    foundCharacters.length !== props.mapInView.characters.length
-  ) {
+  if (!characterSet && !charactersLoaded) {
     const characters = props.mapInView.characters.map((character) => {
       return { ...character, isFound: false };
     });
@@ -46,7 +40,46 @@ export default function Game(props) {
     setCharactersLoaded(true);
   }
 
-  function handleStartGame() {}
+  useEffect(() => {
+    let intervalId;
+
+    if (isRunning) {
+      intervalId = setInterval(() => {
+        setGameTimer((prevGameTimer) => prevGameTimer + 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isRunning]);
+
+  function handleStartGame() {
+    fetch(
+      `http://wheres-wally-node-backend-production.up.railway.app/game/${props.mapInView.id}`,
+      {
+        method: "POST",
+      }
+    )
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          props.setCurrentError(true);
+          props.setErrorInView(data.message);
+          console.log("Error received when fetching data: " + data.message);
+          return;
+        }
+        setIsRunning(true);
+        setGameStart(true);
+        console.log({ ...data });
+      })
+      .catch((error) => {
+        props.setCurrentError(true);
+        props.setErrorInView(error);
+      });
+  }
 
   useEffect(() => {
     if (!windowZoom) {
@@ -84,8 +117,22 @@ export default function Game(props) {
     console.log("y inside Div is: " + yInsideDiv);
   }
 
-  function checkWinner() {
-    return;
+  function checkWinner(array) {
+    // find out if all characters have been found
+    const filteredArray = array.filter((character) => !character.isFound);
+
+    console.log(filteredArray);
+    if (filteredArray.length === 0) {
+      // stop timer
+      setIsRunning(false);
+      //show winner modal including final time, form to enter name for score.
+
+      // then once submitted show updated leaderboard, top 5 entries.
+    }
+
+    // if all characters found:
+
+    //show winner modal, including final time, opportunity for person to enter in their name for score
   }
 
   function handleSubmit(character) {
@@ -130,12 +177,12 @@ export default function Game(props) {
         char.id === character.id ? { ...char, isFound: true } : char
       );
 
-      setFoundCharacters(updatedCharacters);
-      console.log(foundCharacters);
+      setCharacterSet(updatedCharacters);
+      console.log(updatedCharacters);
       setCursorPosition(null);
       setUserGuessPosition(null);
       setSelectionIsVisible(false);
-      checkWinner();
+      checkWinner(updatedCharacters);
     } else {
       console.log("No hit!");
     }
@@ -146,12 +193,12 @@ export default function Game(props) {
       <div>Device pixel ratio is currently {windowZoom}</div>
       <div className="game-heading">{props.mapInView.name}</div>
       <div className="game-tagline">{props.mapInView.mapTagline}</div>
-      {gameStart && (
+      {!gameStart && (
         <button className="start-btn" onClick={() => handleStartGame()}>
           Start Game
         </button>
       )}
-      {!gameStart && (
+      {gameStart && (
         <div className="game-characters">
           {charactersLoaded &&
             characterSet.map((character) => {

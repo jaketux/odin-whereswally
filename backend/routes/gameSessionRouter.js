@@ -4,7 +4,7 @@ const gameSessionController = require("../controller/gameSessionController");
 
 const gameSessionRouter = Router();
 
-gameSessionRouter.post("/", gameSessionController.startSession);
-gameSessionRouter.put("/", gameSessionController.endSession);
+gameSessionRouter.post("/:mapId", gameSessionController.startSession);
+gameSessionRouter.put("/:mapId", gameSessionController.endSession);
 
 module.exports = gameSessionRouter;

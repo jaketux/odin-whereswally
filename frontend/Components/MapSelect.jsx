@@ -10,6 +10,7 @@ export default function MapSelect(props) {
         {mapStorage.map((map) => {
           return (
             <MapCard
+              key={map.id}
               map={map}
               setMapInView={setMapInView}
               setPageView={setPageView}

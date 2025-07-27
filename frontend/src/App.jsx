@@ -57,7 +57,13 @@ function App() {
           setPageView={setPageView}
         />
       )}
-      {pageView === "gameSelected" && <Game mapInView={mapInView} />}
+      {pageView === "gameSelected" && (
+        <Game
+          mapInView={mapInView}
+          setCurrentError={setCurrentError}
+          setErrorInView={setErrorInView}
+        />
+      )}
     </>
   );
 }
