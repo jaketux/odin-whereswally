@@ -42,6 +42,7 @@ function App() {
 
   function returnHome() {
     setPageView("mapSelection");
+    setMapInView(null);
     // do something here about ending the current game session / stoppping timers, all that jazz
     return;
   }
