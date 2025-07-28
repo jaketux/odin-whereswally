@@ -218,7 +218,8 @@ li:hover {
 }
 
 .start-btn,
-.end-btn {
+.end-btn,
+.submit-btn {
   background-color: #0095ff;
   border: 1px solid transparent;
   border-radius: 5px;
@@ -248,17 +249,35 @@ li:hover {
 .start-btn:hover,
 .start-btn:focus,
 .end-btn:hover,
-.end-btn:focus {
+.end-btn:focus,
+.submit-btn:hover,
+.submit-btn:focus {
   background-color: #07c;
 }
 
 .start-btn:focus,
-.end-btn:focus {
+.end-btn:focus,
+.submit-btn:focus {
   box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
 }
 
 .start-btn:active,
-.end-btn:active {
+.end-btn:active,
+.submit-btn:active {
   background-color: #0064bd;
   box-shadow: none;
+}
+
+.score-submit {
+  display: flex;
+  flex-direction: column;
+}
+
+.username-entry {
+}
+
+#username {
+  width: 250px;
+  height: 20px;
+  margin-left: 10px;
 }

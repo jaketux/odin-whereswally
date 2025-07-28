@@ -47,9 +47,14 @@ function App() {
     return;
   }
 
+  function viewScoreBoard() {
+    setPageView("scoreBoardSelected");
+    setMapInView(null);
+  }
+
   return (
     <>
-      <Header returnHome={returnHome} />
+      <Header returnHome={returnHome} viewScoreBoard={viewScoreBoard} />
       {pageView === "mapSelection" && (
         <MapSelect
           mapStorage={mapStorage}
@@ -62,8 +67,11 @@ function App() {
           mapInView={mapInView}
           setCurrentError={setCurrentError}
           setErrorInView={setErrorInView}
+          setMapStorage={setMapStorage}
+          viewScoreBoard={viewScoreBoard}
         />
       )}
+      {pageView === "scoreBoardSelected" && <Scoreboard />}
     </>
   );
 }

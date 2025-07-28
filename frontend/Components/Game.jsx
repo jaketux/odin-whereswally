@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import PauseBtn from "../src/assets/pause-button.png";
 import Stopwatch from "../src/assets/stopwatch.png";
 import Resetbutton from "../src/assets/reset.png";
+import GoldMedal from "../src/assets/goldmedal.png";
+import SilverMedal from "../src/assets/silvermedal.png";
+import BronzeMedal from "../src/assets/bronzemedal.png";
 
 export default function Game(props) {
   const [gameStart, setGameStart] = useState(false);
@@ -29,9 +32,9 @@ export default function Game(props) {
 
   //TODOs:
 
-  //Complete CheckWinner logic+ending of game including fetch 'put' of game session.
+  //Check fetch 'put' of game session is working correctly and populating scoreboard.
   //Instructions modal to appear once game is selected showing instructions for the game and can be toggled on or off using instructions link in header. Should pause game if running.
-  //Scoreboard creation and display on conclusion of game.
+  //Create scoreboard component to be displayed on conclusion of game.
 
   //Handles loading of characters.
   if (!characterSet && !charactersLoaded) {
@@ -59,15 +62,22 @@ export default function Game(props) {
     };
   }, [isRunning]);
 
+  //Handles formatting of raw seconds to minutes and seconds
+  function formatTime(time) {
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
+
+    let formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
+
+    return `${minutes}m:${formattedSeconds}s`;
+  }
+
   //Handles formatting of game clock whilst clock is running.
   useEffect(() => {
     if (isRunning) {
-      const minutes = Math.floor(gameTimer / 60);
-      const seconds = gameTimer % 60;
+      const time = formatTime(gameTimer);
 
-      const formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
-
-      setFormattedTimer(`${minutes}m:${formattedSeconds}s`);
+      setFormattedTimer(time);
     }
   }, [gameTimer]);
 
@@ -143,7 +153,42 @@ export default function Game(props) {
     event.stopPropagation();
   }
 
-  function handleScoreSubmission() {}
+  // submits score and then obtains updated map data including game sessions.
+  function handleScoreSubmission(formData) {
+    const username = formData.get("username");
+
+    fetch("https://wheres-wally-node-backend-production.up.railway.app/game", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gameSessionId: currentGameSessionId,
+        endTime: gameTimer,
+        username: username,
+        mapId: props.mapInView.id,
+      }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          props.setCurrentError(true);
+          props.setErrorInView(data.message);
+          console.log(
+            "Error received when updating existing score: " + data.message
+          );
+          return;
+        }
+        props.setMapStorage(data);
+        // view scoreboard
+        props.viewScoreBoard();
+        console.log({ ...data });
+      })
+      .catch((error) => {
+        props.setCurrentError(true);
+        props.setErrorInView(error);
+      });
+  }
 
   //Checks whether user has found all characters and handles game ending
   function checkWinner(array) {
@@ -332,7 +377,7 @@ export default function Game(props) {
               width: "150px",
               backgroundColor: "white",
               padding: "5px",
-              height: "20px;",
+              height: "20px",
             }}
           >
             Who did you find?
@@ -341,6 +386,7 @@ export default function Game(props) {
             if (!character.isFound) {
               return (
                 <div
+                  key={index}
                   className="character-selection"
                   onMouseEnter={() => setHoveredCharacter(character.id)}
                   onMouseLeave={() => setHoveredCharacter(null)}
@@ -382,15 +428,90 @@ export default function Game(props) {
             height: "400px",
             backgroundColor: "white",
             borderRadius: "10px",
-            padding: "5px",
+            padding: "20px",
             zIndex: "1000",
           }}
         >
-          <div className="postgame-header">Well done!</div>
-          <div className="postgame-subheader">
-            You found all of the characters in {formattedTimer}.
+          <div className="postgame-header">
+            Well done! You found all of the characters in {formattedTimer}.
           </div>
-          <form action={handleScoreSubmission}></form>
+          {props.mapInView.gameSessions.length === 0 && (
+            <div>
+              <div>
+                No scores have been recorded for {props.mapInView.name}.
+              </div>
+              <div>
+                Enter your name to record your score. Leave blank to save
+                anonymously.
+              </div>
+              <form action={handleScoreSubmission} className="score-submit">
+                <div className="username-entry">
+                  <label htmlFor="username">Name:</label>
+                  <input type="text" name="username" id="username" />
+                </div>
+
+                <button type="submit" className="submit-btn">
+                  Submit
+                </button>
+              </form>
+            </div>
+          )}
+          {props.mapInView.gameSessions.length > 0 && (
+            <div className="scoreboard">
+              <div className="scoreboard-heading">Scoreboard</div>
+              <div className="score-container">
+                <div className="score">
+                  <div className="trophy"></div>
+                  <div className="user"></div>
+                  <div className="time"></div>
+                </div>
+                {props.mapInView.gameSessions.map((score, index) => {
+                  return (
+                    <div className="score" key={index}>
+                      <div className="trophy">
+                        {index === 0 && (
+                          <img
+                            src={GoldMedal}
+                            alt="Image of a gold medal"
+                            className="small-btn-img"
+                          />
+                        )}
+                        {index === 1 && (
+                          <img
+                            src={SilverMedal}
+                            alt="Image of a silver medal"
+                            className="small-btn-img"
+                          />
+                        )}
+                        {index === 2 && (
+                          <img
+                            src={BronzeMedal}
+                            alt="Image of a silver medal"
+                            className="small-btn-img"
+                          />
+                        )}
+                      </div>
+                      <div className="user">{score.username}</div>
+                      <div className="time">{formatTime(score.endTime)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div>
+                Enter your name to record your score. Leave blank to save
+                anonymously.
+              </div>
+              <form action={handleScoreSubmission} className="score-submit">
+                <div className="username-entry">
+                  <label htmlFor="username">Name:</label>
+                  <input type="text" name="username" id="username" />
+                </div>
+                <button type="submit" className="submit-btn">
+                  Submit
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       )}
     </div>

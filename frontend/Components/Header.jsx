@@ -9,7 +9,7 @@ export default function Header(props) {
       </ul>
       <img src={WheresWallyHeader} className="header-img" />
       <ul className="header-nav-right">
-        <li>Scoreboard</li>
+        <li onClick={() => props.viewScoreBoard()}>Scoreboard</li>
       </ul>
     </div>
   );
