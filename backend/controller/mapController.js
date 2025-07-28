@@ -6,6 +6,9 @@ async function getMaps(req, res) {
       include: {
         characters: true,
         gameSessions: {
+          where: {
+            completed: true,
+          },
           orderBy: {
             endTime: "asc",
           },

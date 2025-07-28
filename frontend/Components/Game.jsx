@@ -6,7 +6,7 @@ import Resetbutton from "../src/assets/reset.png";
 export default function Game(props) {
   const [gameStart, setGameStart] = useState(false);
   const [gameTimer, setGameTimer] = useState(null);
-  const [formattedTimer, setFormattedTimer] = useState("0:00");
+  const [formattedTimer, setFormattedTimer] = useState("0m:00s");
 
   const [isRunning, setIsRunning] = useState(false);
 
@@ -24,9 +24,11 @@ export default function Game(props) {
 
   const [currentGameSessionId, setCurrentGameSessionId] = useState(null);
 
+  //toggles between showing the game screen and the postgame
+  const [showPostGame, setShowPostGame] = useState(false);
+
   //TODOs:
 
-  //Clicking off the map image should remove the placement off an existing guess marker.
   //Complete CheckWinner logic+ending of game including fetch 'put' of game session.
   //Instructions modal to appear once game is selected showing instructions for the game and can be toggled on or off using instructions link in header. Should pause game if running.
   //Scoreboard creation and display on conclusion of game.
@@ -65,10 +67,8 @@ export default function Game(props) {
 
       const formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
 
-      setFormattedTimer(`${minutes}:${formattedSeconds}`);
+      setFormattedTimer(`${minutes}m:${formattedSeconds}s`);
     }
-
-    return () => {};
   }, [gameTimer]);
 
   //Handles start of the game
@@ -139,7 +139,11 @@ export default function Game(props) {
     console.log("x inside Div is: " + xInsideDiv);
 
     console.log("y inside Div is: " + yInsideDiv);
+
+    event.stopPropagation();
   }
+
+  function handleScoreSubmission() {}
 
   //Checks whether user has found all characters and handles game ending
   function checkWinner(array) {
@@ -151,7 +155,7 @@ export default function Game(props) {
       // stop timer
       setIsRunning(false);
       //show winner modal including final time, form to enter name for score.
-
+      setShowPostGame(true);
       // then once submitted show updated leaderboard, top 5 entries.
     }
   }
@@ -159,6 +163,7 @@ export default function Game(props) {
   //Checks user guess against stored character coordinates.
   function handleGuess(character) {
     let coordinates;
+
     if (character.name === "Wally") {
       coordinates = props.mapInView.coordinatesWally;
     } else if (character.name === "Woof") {
@@ -216,6 +221,28 @@ export default function Game(props) {
     setGameStart(false);
     setFormattedTimer("0:00");
   }
+
+  //Removes selection marker if user clicks outside the map
+  useEffect(() => {
+    function removeSelection(event) {
+      if (
+        event.target.closest(".character-selection") ||
+        event.target.closest(".selection-box")
+      ) {
+        return;
+      }
+      setUserGuessPosition(null);
+      setSelectionIsVisible(false);
+    }
+
+    if (selectionIsVisible) {
+      document.body.addEventListener("mousedown", removeSelection);
+    }
+
+    return () => {
+      document.body.removeEventListener("mousedown", removeSelection);
+    };
+  }, [selectionIsVisible]);
 
   return (
     <div className="game-box">
@@ -281,7 +308,7 @@ export default function Game(props) {
       </div>
 
       {selectionIsVisible && isRunning && (
-        <>
+        <div onClick={(event) => event.stopPropagation()}>
           <div
             style={{
               position: "absolute",
@@ -342,7 +369,29 @@ export default function Game(props) {
               );
             }
           })}
-        </>
+        </div>
+      )}
+
+      {showPostGame && (
+        <div
+          style={{
+            position: "absolute",
+            fontSize: "18px",
+            fontWeight: "700",
+            width: "650px",
+            height: "400px",
+            backgroundColor: "white",
+            borderRadius: "10px",
+            padding: "5px",
+            zIndex: "1000",
+          }}
+        >
+          <div className="postgame-header">Well done!</div>
+          <div className="postgame-subheader">
+            You found all of the characters in {formattedTimer}.
+          </div>
+          <form action={handleScoreSubmission}></form>
+        </div>
       )}
     </div>
   );
