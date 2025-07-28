@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PauseBtn from "../src/assets/pause-button.png";
 import Stopwatch from "../src/assets/stopwatch.png";
-import Stopbutton from "../src/assets/stop.png";
+import Resetbutton from "../src/assets/reset.png";
 
 export default function Game(props) {
   const [gameStart, setGameStart] = useState(false);
@@ -9,6 +9,7 @@ export default function Game(props) {
   const [formattedTimer, setFormattedTimer] = useState("0:00");
 
   const [isRunning, setIsRunning] = useState(false);
+
   const [charactersLoaded, setCharactersLoaded] = useState(false);
   const [characterSet, setCharacterSet] = useState(null);
   const [windowZoom, setWindowZoom] = useState(null);
@@ -23,22 +24,14 @@ export default function Game(props) {
 
   const [currentGameSessionId, setCurrentGameSessionId] = useState(null);
 
-  const [gameFinishsed, setGameFinished] = useState(false);
+  //TODOs:
 
-  //instructions modal appears once game is selected showing instructions for the game.
+  //Clicking off the map image should remove the placement off an existing guess marker.
+  //Complete CheckWinner logic+ending of game including fetch 'put' of game session.
+  //Instructions modal to appear once game is selected showing instructions for the game and can be toggled on or off using instructions link in header. Should pause game if running.
+  //Scoreboard creation and display on conclusion of game.
 
-  // once start game is selected, gamesession fetch post request is launched to create new game session on backend.
-
-  // the gametimer state is incremented by 1 each second until the game is ended.
-
-  //this timer is displayed on the screen next to the characters box.
-
-  //if a character is found, increment charactersFound by 1
-
-  //once charactersFound === characters.length, all characters have been found and game concludes
-
-  //handle ending of game session with fetch put request.
-
+  //Handles loading of characters.
   if (!characterSet && !charactersLoaded) {
     const characters = props.mapInView.characters.map((character) => {
       return { ...character, isFound: false };
@@ -47,6 +40,7 @@ export default function Game(props) {
     setCharactersLoaded(true);
   }
 
+  //Handles updating of game clock whilst clock is running.
   useEffect(() => {
     let intervalId;
 
@@ -63,6 +57,7 @@ export default function Game(props) {
     };
   }, [isRunning]);
 
+  //Handles formatting of game clock whilst clock is running.
   useEffect(() => {
     if (isRunning) {
       const minutes = Math.floor(gameTimer / 60);
@@ -76,6 +71,7 @@ export default function Game(props) {
     return () => {};
   }, [gameTimer]);
 
+  //Handles start of the game
   function handleStartGame() {
     const mapId = props.mapInView.id;
 
@@ -107,6 +103,7 @@ export default function Game(props) {
       });
   }
 
+  //Handles zooming of window and removes placed markers if user zooms.
   useEffect(() => {
     if (!windowZoom) {
       setWindowZoom(Math.round(window.devicePixelRatio * 100) / 100);
@@ -125,6 +122,7 @@ export default function Game(props) {
     };
   }, [windowZoom]);
 
+  //Handles user placing guess marker
   function handleClick(event) {
     const divLocation = event.currentTarget.getBoundingClientRect();
     const xInsideDiv = Math.round(event.clientX - divLocation.left);
@@ -143,6 +141,7 @@ export default function Game(props) {
     console.log("y inside Div is: " + yInsideDiv);
   }
 
+  //Checks whether user has found all characters and handles game ending
   function checkWinner(array) {
     // find out if all characters have been found
     const filteredArray = array.filter((character) => !character.isFound);
@@ -155,17 +154,10 @@ export default function Game(props) {
 
       // then once submitted show updated leaderboard, top 5 entries.
     }
-
-    // if all characters found:
-
-    //show winner modal, including final time, opportunity for person to enter in their name for score
   }
 
-  function handleStopGame() {
-    return;
-  }
-
-  function handleSubmit(character) {
+  //Checks user guess against stored character coordinates.
+  function handleGuess(character) {
     let coordinates;
     if (character.name === "Wally") {
       coordinates = props.mapInView.coordinatesWally;
@@ -205,6 +197,26 @@ export default function Game(props) {
     }
   }
 
+  //Pauses game
+  function toggleGamePause() {
+    setIsRunning((prevRunning) => !prevRunning);
+    setCursorPosition(null);
+    setUserGuessPosition(null);
+    setSelectionIsVisible(false);
+  }
+
+  //Resets game
+  function handleResetGame() {
+    setIsRunning(false);
+    setCursorPosition(null);
+    setGameTimer(null);
+    setUserGuessPosition(null);
+    setSelectionIsVisible(false);
+    setCurrentGameSessionId(null);
+    setGameStart(false);
+    setFormattedTimer("0:00");
+  }
+
   return (
     <div className="game-box">
       <div className="game-heading">{props.mapInView.name}</div>
@@ -241,24 +253,34 @@ export default function Game(props) {
             <div className="game-timer-time">{formattedTimer}</div>
           </div>
           <div className="game-pause">
-            <img src={PauseBtn} alt="Pause Button" className="small-btn-img" />
+            <img
+              src={PauseBtn}
+              alt="Pause Button"
+              className="small-btn-img"
+              onClick={() => toggleGamePause()}
+            />
           </div>
           <div className="game-endgame">
-            <img src={Stopbutton} alt="Stop button" className="small-btn-img" />
+            <img
+              src={Resetbutton}
+              alt="Reset button"
+              className="small-btn-img"
+              onClick={() => handleResetGame()}
+            />
           </div>
         </div>
       )}
 
       <div className="game-main">
         <img
-          className="game-map"
+          className={isRunning ? "game-map" : "game-map hidden"}
           src={props.mapInView.mapImage}
           alt="Image of the map"
           onClick={handleClick}
         />
       </div>
 
-      {selectionIsVisible && (
+      {selectionIsVisible && isRunning && (
         <>
           <div
             style={{
@@ -295,7 +317,7 @@ export default function Game(props) {
                   className="character-selection"
                   onMouseEnter={() => setHoveredCharacter(character.id)}
                   onMouseLeave={() => setHoveredCharacter(null)}
-                  onClick={() => handleSubmit(character)}
+                  onClick={() => handleGuess(character)}
                   style={{
                     position: "absolute",
                     left: cursorPosition.x - 25,

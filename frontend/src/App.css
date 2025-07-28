@@ -149,6 +149,10 @@ li:hover {
   align-items: center;
 }
 
+.hidden {
+  filter: blur(2.5px);
+}
+
 .game-heading {
   margin: 10px 0px;
   font-size: 32px;
