@@ -102,7 +102,7 @@ const gameController = {
           gameSessionId: gameSessionId,
           endTime: endTime,
           username: username,
-          mapId: mapId,
+          mapId: parseInt(mapId),
         }),
       }
     );

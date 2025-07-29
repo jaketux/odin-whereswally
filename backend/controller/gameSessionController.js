@@ -62,8 +62,9 @@ async function endSession(req, res) {
 
     return res.json(updatedMaps);
   } catch (error) {
+    console.error("Error in endSession: " + error);
     return res
-      .status(501)
+      .status(500)
       .json({ message: "Error when ending existing game session: " + error });
   }
 }
