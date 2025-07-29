@@ -32,6 +32,8 @@ const gameController = {
     const filteredArray = characters.filter((character) => !character.isFound);
     if (filteredArray.length === 0) {
       return true;
+    } else {
+      return false;
     }
   },
 
@@ -61,6 +63,7 @@ const gameController = {
     let rightSideBox = userGuessX + 25;
     let topSideBox = userGuessY - 25;
     let bottomSideBox = userGuessY + 25;
+    let updatedCharacters;
 
     if (
       leftSideBox < coordinates[1] &&
@@ -68,19 +71,26 @@ const gameController = {
       topSideBox < coordinates[3] &&
       bottomSideBox > coordinates[2]
     ) {
-      return {
-        characters: characters.map((char) =>
-          char.id === character.id ? { ...char, isFound: true } : char
-        ),
-        gameSessionId: currentGameSessionId,
-        gameResult: checkWinner(characters),
-      };
+      updatedCharacters = characters.map((char) =>
+        char.id === character.id ? { ...char, isFound: true } : char
+      );
     } else {
       console.log("No hit!");
     }
+
+    return {
+      updatedCharacters: updatedCharacters,
+      gameSessionId: currentGameSessionId,
+      gameResult: this.checkWinner(updatedCharacters),
+    };
   },
 
   async handleSubmitScore(gameSessionId, endTime, username, mapId) {
+    console.log("Game session ID: " + gameSessionId);
+    console.log("End Time: " + endTime);
+    console.log("User name: " + username);
+    console.log("Map ID: " + mapId);
+
     const res = await fetch(
       "https://wheres-wally-node-backend-production.up.railway.app/game",
       {

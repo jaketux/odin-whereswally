@@ -38,13 +38,6 @@ export default function Game(props) {
   //Instructions modal to appear once game is selected showing instructions for the game and can be toggled on or off using instructions link in header. Should pause game if running.
   //Create scoreboard component to be displayed on conclusion of game.
 
-  //Handles loading of characters - I dont believe this is required anymore but TBC.
-  // if (!characterSet && !charactersLoaded) {
-  //   const startGame = gameController.startGameSession(props.mapInView);
-  //   setCharacterSet(startGame.characters);
-  //   setCharactersLoaded(true);
-  // }
-
   //Handles updating of game clock whilst clock is running.
   useEffect(() => {
     let intervalId;
@@ -78,9 +71,10 @@ export default function Game(props) {
         props.mapInView
       );
       setCharacterSet(gameSession.characters);
+      setCharactersLoaded(true);
       setIsRunning(true);
       setGameStart(true);
-      setCurrentGameSessionId(data.id);
+      setCurrentGameSessionId(gameSession.gameSessionId);
     } catch (error) {
       props.setCurrentError(true);
       props.setErrorInView(error);
@@ -150,11 +144,11 @@ export default function Game(props) {
   }
 
   //Checks user guess against stored character coordinates.
-  function handleGuess(character) {
+  async function handleGuess(character) {
     let userGuessX = userGuessPosition.x;
     let userGuessY = userGuessPosition.y;
 
-    const guessResult = gameController.handleGuess(
+    const guessResult = await gameController.handleGuess(
       character,
       characterSet,
       props.mapInView,
@@ -164,6 +158,7 @@ export default function Game(props) {
     );
 
     if (guessResult.gameResult) {
+      setCharacterSet(guessResult.updatedCharacters);
       setIsRunning(false);
       setShowPostGame(true);
       setCursorPosition(null);
@@ -173,11 +168,11 @@ export default function Game(props) {
       setCursorPosition(null);
       setUserGuessPosition(null);
       setSelectionIsVisible(false);
-      setCharacterSet(guessResult.characters);
+      setCharacterSet(guessResult.updatedCharacters);
     }
   }
 
-  //Pauses game
+  //Pauses game timer
   function toggleGamePause() {
     setIsRunning((prevRunning) => !prevRunning);
     setCursorPosition(null);
@@ -185,7 +180,7 @@ export default function Game(props) {
     setSelectionIsVisible(false);
   }
 
-  //Resets game
+  //Resets game timer
   function handleResetGame() {
     setIsRunning(false);
     setCursorPosition(null);

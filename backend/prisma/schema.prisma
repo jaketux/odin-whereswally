@@ -36,8 +36,7 @@ model Character {
 
 model GameSession {
   id        String  @id @default(cuid())
-  startTime Int     @default(0)
-  endTime   Int?
+  endTime   String?
   username  String? @default("Anonymous")
   completed Boolean @default(false)
   map       Map     @relation(fields: [mapId], references: [id])
