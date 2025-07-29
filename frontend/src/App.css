@@ -273,11 +273,114 @@ li:hover {
   flex-direction: column;
 }
 
+.score-container {
+  display: flex;
+  gap: 20px;
+  margin-left: 25px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+
+.postgame-header {
+  margin-left: 25px;
+  margin-top: 15px;
+  font-weight: 500;
+  margin-bottom: 30px;
+}
+
+.postgame-subheading {
+  margin-left: 25px;
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.postgame-subheading-noscores {
+  margin-left: 25px;
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 30px;
+}
+
 .username-entry {
+  margin-left: 25px;
+  margin-top: 15px;
 }
 
 #username {
   width: 250px;
   height: 20px;
   margin-left: 10px;
+}
+
+.scoreboard-heading {
+  margin-left: 25px;
+  margin-top: 15px;
+}
+
+.score {
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.score-submit > button {
+  margin-left: 25px;
+  margin-top: 20px;
+}
+
+.scoreboard-page-heading {
+  margin-top: 20px;
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.scoreboard-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 1000px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid lightgray;
+}
+
+.scoreboard-block-mapheading {
+  font-size: 36px;
+  font-weight: 700;
+  width: 1000px;
+  margin-bottom: 5px;
+}
+
+.scoreboard-block-image {
+  height: 75px;
+  width: 1000px;
+  object-fit: cover;
+}
+
+.scoreboard-block-score-container {
+  display: flex;
+  width: 1000px;
+}
+
+.scoreboard-block-subheading {
+  width: 1000px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.scoreboard-block-scores {
+  margin-bottom: 20px;
+}
+
+.scoreboard-block-noscores {
+  margin-bottom: 20px;
+  width: 1000px;
+  font-size: 24px;
+  font-weight: 500;
 }

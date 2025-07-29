@@ -3,6 +3,7 @@ import "./App.css";
 import Header from "../Components/Header";
 import MapSelect from "../Components/MapSelect";
 import Game from "../Components/Game";
+import Scoreboard from "../Components/Scoreboard";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -71,7 +72,9 @@ function App() {
           viewScoreBoard={viewScoreBoard}
         />
       )}
-      {pageView === "scoreBoardSelected" && <Scoreboard />}
+      {pageView === "scoreBoardSelected" && (
+        <Scoreboard mapStorage={mapStorage} />
+      )}
     </>
   );
 }

@@ -7,6 +7,8 @@ import Resetbutton from "../src/assets/reset.png";
 import GoldMedal from "../src/assets/goldmedal.png";
 import SilverMedal from "../src/assets/silvermedal.png";
 import BronzeMedal from "../src/assets/bronzemedal.png";
+import Four from "../src/assets/four.png";
+import Five from "../src/assets/five.png";
 
 export default function Game(props) {
   const [gameStart, setGameStart] = useState(false);
@@ -126,7 +128,10 @@ export default function Game(props) {
     const gameSessionId = currentGameSessionId;
     const endTime = gameTimer;
     const formattedEndtime = formatTime(endTime);
-    const username = formData.get("username");
+    let username = formData.get("username");
+    if (username === undefined || username === "") {
+      username = "Anonymous";
+    }
     const mapId = props.mapInView.id;
 
     try {
@@ -137,6 +142,13 @@ export default function Game(props) {
         mapId
       );
       props.setMapStorage(submitScore.mapData);
+
+      //do other stuff once score submitted
+
+      handleResetGame();
+
+      //show scoreboard///
+      props.viewScoreBoard();
     } catch (error) {
       props.setCurrentError(true);
       props.setErrorInView(error);
@@ -190,6 +202,7 @@ export default function Game(props) {
     setCurrentGameSessionId(null);
     setGameStart(false);
     setFormattedTimer("0:00");
+    setShowPostGame(false);
   }
 
   //Removes selection marker if user clicks outside the map
@@ -362,10 +375,10 @@ export default function Game(props) {
           </div>
           {props.mapInView.gameSessions.length === 0 && (
             <div>
-              <div>
+              <div className="postgame-subheading-noscores">
                 No scores have been recorded for {props.mapInView.name}.
               </div>
-              <div>
+              <div className="postgame-subheading">
                 Enter your name to record your score. Leave blank to save
                 anonymously.
               </div>
@@ -383,13 +396,8 @@ export default function Game(props) {
           )}
           {props.mapInView.gameSessions.length > 0 && (
             <div className="scoreboard">
-              <div className="scoreboard-heading">Scoreboard</div>
+              <div className="scoreboard-heading">Top Scores</div>
               <div className="score-container">
-                <div className="score">
-                  <div className="trophy"></div>
-                  <div className="user"></div>
-                  <div className="time"></div>
-                </div>
                 {props.mapInView.gameSessions.map((score, index) => {
                   return (
                     <div className="score" key={index}>
@@ -415,16 +423,30 @@ export default function Game(props) {
                             className="small-btn-img"
                           />
                         )}
+                        {index === 3 && (
+                          <img
+                            src={Four}
+                            alt="Image of a number four"
+                            className="small-btn-img"
+                          />
+                        )}
+                        {index === 4 && (
+                          <img
+                            src={Five}
+                            alt="Image of a number five"
+                            className="small-btn-img"
+                          />
+                        )}
                       </div>
                       <div className="user">{score.username}</div>
-                      <div className="time">{formatTime(score.endTime)}</div>
+                      <div className="time">{score.endTime}</div>
                     </div>
                   );
                 })}
               </div>
-              <div>
-                Enter your name to record your score. Leave blank to save
-                anonymously.
+              <div className="postgame-subheading">
+                Enter your name to record your score. Leave blank to save as
+                "Anonymous".
               </div>
               <form action={handleScoreSubmission} className="score-submit">
                 <div className="username-entry">
