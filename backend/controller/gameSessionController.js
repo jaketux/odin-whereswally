@@ -47,16 +47,18 @@ async function endSession(req, res) {
         .json({ message: "Error when updating existing game session. " });
     }
 
-    const updatedMaps = await prisma.gameSession.findMany({
-      where: {
-        completed: true,
-      },
-      orderBy: {
-        endTime: "asc",
-      },
-      take: 5,
+    const updatedMaps = await prisma.map.findMany({
       include: {
-        maps: true,
+        characters: true,
+        gameSessions: {
+          where: {
+            completed: true,
+          },
+          orderBy: {
+            endTime: "asc",
+          },
+          take: 5,
+        },
       },
     });
 
