@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import gameController from "../controllers/gameController.js";
+import formatTime from "../controllers/formatTime.js";
 import PauseBtn from "../src/assets/pause-button.png";
 import Stopwatch from "../src/assets/stopwatch.png";
 import Resetbutton from "../src/assets/reset.png";
@@ -36,14 +38,12 @@ export default function Game(props) {
   //Instructions modal to appear once game is selected showing instructions for the game and can be toggled on or off using instructions link in header. Should pause game if running.
   //Create scoreboard component to be displayed on conclusion of game.
 
-  //Handles loading of characters.
-  if (!characterSet && !charactersLoaded) {
-    const characters = props.mapInView.characters.map((character) => {
-      return { ...character, isFound: false };
-    });
-    setCharacterSet(characters);
-    setCharactersLoaded(true);
-  }
+  //Handles loading of characters - I dont believe this is required anymore but TBC.
+  // if (!characterSet && !charactersLoaded) {
+  //   const startGame = gameController.startGameSession(props.mapInView);
+  //   setCharacterSet(startGame.characters);
+  //   setCharactersLoaded(true);
+  // }
 
   //Handles updating of game clock whilst clock is running.
   useEffect(() => {
@@ -62,16 +62,6 @@ export default function Game(props) {
     };
   }, [isRunning]);
 
-  //Handles formatting of raw seconds to minutes and seconds
-  function formatTime(time) {
-    let minutes = Math.floor(time / 60);
-    let seconds = time % 60;
-
-    let formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
-
-    return `${minutes}m:${formattedSeconds}s`;
-  }
-
   //Handles formatting of game clock whilst clock is running.
   useEffect(() => {
     if (isRunning) {
@@ -82,35 +72,19 @@ export default function Game(props) {
   }, [gameTimer]);
 
   //Handles start of the game
-  function handleStartGame() {
-    const mapId = props.mapInView.id;
-
-    fetch("https://wheres-wally-node-backend-production.up.railway.app/game", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        mapId: mapId,
-      }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) {
-          props.setCurrentError(true);
-          props.setErrorInView(data.message);
-          console.log("Error received when fetching data: " + data.message);
-          return;
-        }
-        setIsRunning(true);
-        setGameStart(true);
-        setCurrentGameSessionId(data.id);
-        console.log({ ...data });
-      })
-      .catch((error) => {
-        props.setCurrentError(true);
-        props.setErrorInView(error);
-      });
+  async function handleStartGame() {
+    try {
+      const gameSession = await gameController.startGameSession(
+        props.mapInView
+      );
+      setCharacterSet(gameSession.characters);
+      setIsRunning(true);
+      setGameStart(true);
+      setCurrentGameSessionId(data.id);
+    } catch (error) {
+      props.setCurrentError(true);
+      props.setErrorInView(error);
+    }
   }
 
   //Handles zooming of window and removes placed markers if user zooms.
@@ -153,97 +127,53 @@ export default function Game(props) {
     event.stopPropagation();
   }
 
-  // submits score and then obtains updated map data including game sessions.
-  function handleScoreSubmission(formData) {
+  // submits score and then obtains updated map data including game sessions and stores in mapstorage.
+  async function handleScoreSubmission(formData) {
+    const gameSessionId = currentGameSessionId;
+    const endTime = gameTimer;
+    const formattedEndtime = formatTime(endTime);
     const username = formData.get("username");
+    const mapId = props.mapInView.id;
 
-    fetch("https://wheres-wally-node-backend-production.up.railway.app/game", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        gameSessionId: currentGameSessionId,
-        endTime: gameTimer,
-        username: username,
-        mapId: props.mapInView.id,
-      }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) {
-          props.setCurrentError(true);
-          props.setErrorInView(data.message);
-          console.log(
-            "Error received when updating existing score: " + data.message
-          );
-          return;
-        }
-        props.setMapStorage(data);
-        // view scoreboard
-        props.viewScoreBoard();
-        console.log({ ...data });
-      })
-      .catch((error) => {
-        props.setCurrentError(true);
-        props.setErrorInView(error);
-      });
-  }
-
-  //Checks whether user has found all characters and handles game ending
-  function checkWinner(array) {
-    // find out if all characters have been found
-    const filteredArray = array.filter((character) => !character.isFound);
-
-    console.log(filteredArray);
-    if (filteredArray.length === 0) {
-      // stop timer
-      setIsRunning(false);
-      //show winner modal including final time, form to enter name for score.
-      setShowPostGame(true);
-      // then once submitted show updated leaderboard, top 5 entries.
+    try {
+      const submitScore = await gameController.handleSubmitScore(
+        gameSessionId,
+        formattedEndtime,
+        username,
+        mapId
+      );
+      props.setMapStorage(submitScore.mapData);
+    } catch (error) {
+      props.setCurrentError(true);
+      props.setErrorInView(error);
     }
   }
 
   //Checks user guess against stored character coordinates.
   function handleGuess(character) {
-    let coordinates;
+    let userGuessX = userGuessPosition.x;
+    let userGuessY = userGuessPosition.y;
 
-    if (character.name === "Wally") {
-      coordinates = props.mapInView.coordinatesWally;
-    } else if (character.name === "Woof") {
-      coordinates = props.mapInView.coordinatesWoof;
-    } else if (character.name === "Wizard") {
-      coordinates = props.mapInView.coordinatesWizard;
-    } else if (character.name === "Odlaw") {
-      coordinates = props.mapInView.coordinatesOdlaw;
-    } else if (character.name === "Wenda") {
-      coordinates = props.mapInView.coordinatesWenda;
-      //[left, right, top, bottom]
-    }
+    const guessResult = gameController.handleGuess(
+      character,
+      characterSet,
+      props.mapInView,
+      userGuessX,
+      userGuessY,
+      currentGameSessionId
+    );
 
-    let leftSideBox = userGuessPosition.x - 25;
-    let rightSideBox = userGuessPosition.x + 25;
-    let topSideBox = userGuessPosition.y - 25;
-    let bottomSideBox = userGuessPosition.y + 25;
-
-    if (
-      leftSideBox < coordinates[1] &&
-      rightSideBox > coordinates[0] &&
-      topSideBox < coordinates[3] &&
-      bottomSideBox > coordinates[2]
-    ) {
-      const updatedCharacters = characterSet.map((char) =>
-        char.id === character.id ? { ...char, isFound: true } : char
-      );
-      setCharacterSet(updatedCharacters);
-      console.log(updatedCharacters);
+    if (guessResult.gameResult) {
+      setIsRunning(false);
+      setShowPostGame(true);
       setCursorPosition(null);
       setUserGuessPosition(null);
       setSelectionIsVisible(false);
-      checkWinner(updatedCharacters);
     } else {
-      console.log("No hit!");
+      setCursorPosition(null);
+      setUserGuessPosition(null);
+      setSelectionIsVisible(false);
+      setCharacterSet(guessResult.characters);
     }
   }
 
