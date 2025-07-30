@@ -35,10 +35,8 @@ export default function Game(props) {
   const [showPostGame, setShowPostGame] = useState(false);
 
   //TODOs:
-
-  //Check fetch 'put' of game session is working correctly and populating scoreboard.
-  //Instructions modal to appear once game is selected showing instructions for the game and can be toggled on or off using instructions link in header. Should pause game if running.
-  //Create scoreboard component to be displayed on conclusion of game.
+  //Instructions modal to appear once game is selected prior to game starting, showing instructions for the game. Can be toggled on or off using instructions link in header. Should pause game if running.
+  // Feedback for player guesses if correct or incorrect.
 
   //Handles updating of game clock whilst clock is running.
   useEffect(() => {
@@ -362,8 +360,8 @@ export default function Game(props) {
             position: "absolute",
             fontSize: "18px",
             fontWeight: "700",
-            width: "650px",
-            height: "400px",
+            width: "575px",
+            height: "325px",
             backgroundColor: "white",
             borderRadius: "10px",
             padding: "20px",
