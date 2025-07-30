@@ -4,6 +4,7 @@ import Header from "../Components/Header";
 import MapSelect from "../Components/MapSelect";
 import Game from "../Components/Game";
 import Scoreboard from "../Components/Scoreboard";
+import Instructions from "../Components/Instructions";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -19,6 +20,8 @@ function App() {
   const [pageView, setPageView] = useState("mapSelection");
 
   const [mapInView, setMapInView] = useState(null);
+
+  const [instructionsView, setInstructionsView] = useState(true);
 
   useEffect(() => {
     fetch("http://wheres-wally-node-backend-production.up.railway.app/map", {
@@ -75,6 +78,7 @@ function App() {
       {pageView === "scoreBoardSelected" && (
         <Scoreboard mapStorage={mapStorage} />
       )}
+      {instructionsView && <Instructions />}
     </>
   );
 }

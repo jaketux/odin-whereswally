@@ -74,15 +74,22 @@ const gameController = {
       updatedCharacters = characters.map((char) =>
         char.id === character.id ? { ...char, isFound: true } : char
       );
+      return {
+        updatedCharacters: updatedCharacters,
+        turnCharacter: character.name,
+        turnResult: "Found",
+        gameSessionId: currentGameSessionId,
+        gameResult: this.checkWinner(updatedCharacters),
+      };
     } else {
-      console.log("No hit!");
+      return {
+        updatedCharacters: characters,
+        turnCharacter: character.name,
+        turnResult: "Not Found",
+        gameSessionId: currentGameSessionId,
+        gameResult: this.checkWinner(characters),
+      };
     }
-
-    return {
-      updatedCharacters: updatedCharacters,
-      gameSessionId: currentGameSessionId,
-      gameResult: this.checkWinner(updatedCharacters),
-    };
   },
 
   async handleSubmitScore(gameSessionId, endTime, username, mapId) {

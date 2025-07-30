@@ -34,6 +34,11 @@ export default function Game(props) {
   //toggles between showing the game screen and the postgame
   const [showPostGame, setShowPostGame] = useState(false);
 
+  const [turnResult, setTurnResult] = useState({
+    turnChar: null,
+    turnRes: null,
+  });
+
   //TODOs:
   //Instructions modal to appear once game is selected prior to game starting, showing instructions for the game. Can be toggled on or off using instructions link in header. Should pause game if running.
   // Feedback for player guesses if correct or incorrect.
@@ -54,6 +59,11 @@ export default function Game(props) {
       }
     };
   }, [isRunning]);
+
+  // Scrolls to the top left of the viewport on map select
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   //Handles formatting of game clock whilst clock is running.
   useEffect(() => {
@@ -140,12 +150,7 @@ export default function Game(props) {
         mapId
       );
       props.setMapStorage(submitScore.mapData);
-
-      //do other stuff once score submitted
-
       handleResetGame();
-
-      //show scoreboard///
       props.viewScoreBoard();
     } catch (error) {
       props.setCurrentError(true);
@@ -166,6 +171,7 @@ export default function Game(props) {
       userGuessY,
       currentGameSessionId
     );
+    setTurnResult(null);
 
     if (guessResult.gameResult) {
       setCharacterSet(guessResult.updatedCharacters);
@@ -174,11 +180,15 @@ export default function Game(props) {
       setCursorPosition(null);
       setUserGuessPosition(null);
       setSelectionIsVisible(false);
-    } else {
+    } else if (!guessResult.gameResult) {
       setCursorPosition(null);
       setUserGuessPosition(null);
       setSelectionIsVisible(false);
       setCharacterSet(guessResult.updatedCharacters);
+      setTurnResult({
+        turnChar: guessResult.turnCharacter,
+        turnRes: guessResult.turnResult,
+      });
     }
   }
 
@@ -201,6 +211,7 @@ export default function Game(props) {
     setGameStart(false);
     setFormattedTimer("0:00");
     setShowPostGame(false);
+    setTurnResult(null);
   }
 
   //Removes selection marker if user clicks outside the map
@@ -459,6 +470,84 @@ export default function Game(props) {
               </form>
             </div>
           )}
+        </div>
+      )}
+      {turnResult && turnResult.turnRes === "Found" && (
+        <div
+          style={{
+            position: "absolute",
+            top: "300px",
+            fontSize: "18px",
+            fontWeight: "500",
+            width: "350px",
+            height: "75px",
+            backgroundColor: "white",
+            borderRadius: "10px",
+            padding: "20px",
+            zIndex: "1000",
+            boxShadow: "rgba(0, 0, 0, 0.85) 0px 5px 15px",
+          }}
+          className="turn-result"
+        >
+          <div className="turn-message">
+            Well done, you found {turnResult.turnChar}! Keep searching for the
+            remaining characters.
+          </div>
+          <button onClick={() => setTurnResult(null)} className="submit-btn">
+            Close
+          </button>
+        </div>
+      )}
+      {turnResult && turnResult.turnRes === "Not Found" && (
+        <div
+          style={{
+            position: "absolute",
+            top: "300px",
+            fontSize: "18px",
+            fontWeight: "500",
+            width: "350px",
+            height: "75px",
+            backgroundColor: "white",
+            borderRadius: "10px",
+            padding: "20px",
+            zIndex: "1000",
+            boxShadow: "rgba(0, 0, 0, 0.85) 0px 5px 15px",
+          }}
+          className="turn-result"
+        >
+          {turnResult.turnChar === "Wally" && (
+            <div className="turn-message">
+              {turnResult.turnChar} has found an excellent hiding spot - try
+              again!
+            </div>
+          )}
+          {turnResult.turnChar === "Odlaw" && (
+            <div className="turn-message">
+              {turnResult.turnChar} the thief can't be found that easily, but
+              don't give up!
+            </div>
+          )}
+          {turnResult.turnChar === "Wenda" && (
+            <div className="turn-message">
+              {turnResult.turnChar} is a hide-and-seek champion. Keep up the
+              search!
+            </div>
+          )}
+          {turnResult.turnChar === "Woof" && (
+            <div className="turn-message">
+              {turnResult.turnChar} is well hidden. Keep up the hunt and look
+              for his tail!
+            </div>
+          )}
+          {turnResult.turnChar === "Wizard" && (
+            <div className="turn-message">
+              {turnResult.turnChar} has cast quite the invisibility spell - stay
+              determined!
+            </div>
+          )}
+          <button className="submit-btn" onClick={() => setTurnResult(null)}>
+            Close
+          </button>
         </div>
       )}
     </div>

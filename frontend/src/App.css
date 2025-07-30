@@ -147,6 +147,7 @@ li:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-bottom: 100px;
 }
 
 .hidden {
@@ -381,4 +382,69 @@ li:hover {
 
 .user {
   font-weight: 600;
+}
+
+.turn-result {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.turn-result > button {
+  margin-bottom: 0px;
+  margin-top: 10px;
+}
+
+.instructions-background {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.instructions-heading {
+  font-size: 32px;
+  margin-left: 0px;
+}
+
+.instructions-character {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+
+.instructions-char {
+  height: 65px;
+  border: 1px solid black;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.sub-heading {
+  margin: 10px 0px;
+  font-size: 24px;
+}
+
+.instructions-text {
+  margin: 10px 0px;
+}
+
+.instructions-character:first-child {
+  margin-top: 10px;
+}
+
+.instructions-character:last-child {
+  margin-bottom: 20px;
+}
+
+.select-characters,
+.winning-game {
+  margin-top: 20px;
+}
+.select-characters-step,
+.winning-game-step,
+.tipsforsuccess-step {
+  margin: 10px 0px;
 }
