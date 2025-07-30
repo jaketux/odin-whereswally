@@ -334,7 +334,7 @@ li:hover {
 }
 
 .scoreboard-page-heading {
-  margin-top: 20px;
+  margin-top: 40px;
   font-size: 48px;
   font-weight: 700;
   margin-bottom: 40px;
@@ -368,14 +368,8 @@ li:hover {
   width: 1000px;
 }
 
-.scoreboard-block-subheading {
-  width: 1000px;
-  font-size: 24px;
-  font-weight: 500;
-}
-
 .scoreboard-block-scores {
-  margin-bottom: 20px;
+  margin: 15px 0px;
 }
 
 .scoreboard-block-noscores {
@@ -383,4 +377,8 @@ li:hover {
   width: 1000px;
   font-size: 24px;
   font-weight: 500;
+}
+
+.user {
+  font-weight: 600;
 }

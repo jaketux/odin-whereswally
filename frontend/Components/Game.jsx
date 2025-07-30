@@ -368,7 +368,9 @@ export default function Game(props) {
             borderRadius: "10px",
             padding: "20px",
             zIndex: "1000",
+            boxShadow: "rgba(0, 0, 0, 0.85) 0px 5px 15px",
           }}
+          className="post-game"
         >
           <div className="postgame-header">
             Well done! You found all of the characters in {formattedTimer}.

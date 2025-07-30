@@ -8,17 +8,13 @@ export default function MapScores(props) {
   return (
     <div className="scoreboard-block">
       <div className="scoreboard-block-mapheading">{props.map.name}</div>
-      <div className="scoreboard-block-mapimage">
-        <img
-          src={props.map.mapImage}
-          alt="Image of the Wheres Wally Map"
-          className="scoreboard-block-image"
-        />
-      </div>
-
+      <img
+        src={props.map.mapImage}
+        alt="Image of the Wheres Wally Map"
+        className="scoreboard-block-image"
+      />
       {props.map.gameSessions.length > 0 && (
         <div className="scoreboard-block-scores">
-          <div className="scoreboard-block-subheading">Top Scores</div>
           <div className="scoreboard-block-score-container">
             {props.map.gameSessions.map((score, index) => {
               return (
