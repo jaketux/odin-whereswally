@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import gameController from "../controllers/gameController.js";
 import formatTime from "../controllers/formatTime.js";
+import FoundMarker from "./FoundMarker.jsx";
 import PauseBtn from "../src/assets/pause-button.png";
 import Stopwatch from "../src/assets/stopwatch.png";
 import Resetbutton from "../src/assets/reset.png";
@@ -11,11 +12,24 @@ import Four from "../src/assets/four.png";
 import Five from "../src/assets/five.png";
 
 export default function Game(props) {
-  const [gameStart, setGameStart] = useState(false);
+  const {
+    isRunning,
+    setIsRunning,
+    mapInView,
+    setCurrentError,
+    setErrorInView,
+    setMapStorage,
+    viewScoreBoard,
+    gameStart,
+    setGameStart,
+    foundCharacters,
+    setFoundCharacters,
+    setShowFoundCharacters,
+    showFoundCharacters,
+  } = props;
+
   const [gameTimer, setGameTimer] = useState(null);
   const [formattedTimer, setFormattedTimer] = useState("0m:00s");
-
-  const [isRunning, setIsRunning] = useState(false);
 
   const [charactersLoaded, setCharactersLoaded] = useState(false);
   const [characterSet, setCharacterSet] = useState(null);
@@ -77,17 +91,17 @@ export default function Game(props) {
   //Handles start of the game
   async function handleStartGame() {
     try {
-      const gameSession = await gameController.startGameSession(
-        props.mapInView
-      );
+      const gameSession = await gameController.startGameSession(mapInView);
       setCharacterSet(gameSession.characters);
       setCharactersLoaded(true);
       setIsRunning(true);
       setGameStart(true);
       setCurrentGameSessionId(gameSession.gameSessionId);
+      setFoundCharacters([]);
+      setShowFoundCharacters(false);
     } catch (error) {
-      props.setCurrentError(true);
-      props.setErrorInView(error);
+      setCurrentError(true);
+      setErrorInView(error);
     }
   }
 
@@ -140,7 +154,7 @@ export default function Game(props) {
     if (username === undefined || username === "") {
       username = "Anonymous";
     }
-    const mapId = props.mapInView.id;
+    const mapId = mapInView.id;
 
     try {
       const submitScore = await gameController.handleSubmitScore(
@@ -149,12 +163,12 @@ export default function Game(props) {
         username,
         mapId
       );
-      props.setMapStorage(submitScore.mapData);
+      setMapStorage(submitScore.mapData);
       handleResetGame();
-      props.viewScoreBoard();
+      viewScoreBoard();
     } catch (error) {
-      props.setCurrentError(true);
-      props.setErrorInView(error);
+      setCurrentError(true);
+      setErrorInView(error);
     }
   }
 
@@ -166,7 +180,7 @@ export default function Game(props) {
     const guessResult = await gameController.handleGuess(
       character,
       characterSet,
-      props.mapInView,
+      mapInView,
       userGuessX,
       userGuessY,
       currentGameSessionId
@@ -189,6 +203,22 @@ export default function Game(props) {
         turnChar: guessResult.turnCharacter,
         turnRes: guessResult.turnResult,
       });
+      if (guessResult.turnResult === "Found") {
+        const foundCharacter = {
+          name: guessResult.turnCharacter,
+          coordinatesLeft: guessResult.coordinatesLeft,
+          coordinatesTop: guessResult.coordinatesTop,
+        };
+
+        setShowFoundCharacters(true);
+
+        setFoundCharacters((prevFoundCharacters) => [
+          ...prevFoundCharacters,
+          foundCharacter,
+        ]);
+
+        return;
+      }
     }
   }
 
@@ -238,8 +268,8 @@ export default function Game(props) {
 
   return (
     <div className="game-box">
-      <div className="game-heading">{props.mapInView.name}</div>
-      <div className="game-tagline">{props.mapInView.mapTagline}</div>
+      <div className="game-heading">{mapInView.name}</div>
+      <div className="game-tagline">{mapInView.mapTagline}</div>
       {!gameStart && (
         <button className="start-btn" onClick={() => handleStartGame()}>
           Start Game
@@ -293,10 +323,22 @@ export default function Game(props) {
       <div className="game-main">
         <img
           className={isRunning ? "game-map" : "game-map hidden"}
-          src={props.mapInView.mapImage}
+          src={mapInView.mapImage}
           alt="Image of the map"
           onClick={handleClick}
         />
+        {showFoundCharacters &&
+          foundCharacters.length > 0 &&
+          foundCharacters.map((character, index) => {
+            return (
+              <FoundMarker
+                key={index}
+                top={character.coordinatesTop}
+                left={character.coordinatesLeft}
+                name={character.name}
+              />
+            );
+          })}
       </div>
 
       {selectionIsVisible && isRunning && (
@@ -309,7 +351,7 @@ export default function Game(props) {
               border: "5px solid white",
               height: "50px",
               width: "50px",
-              zIndex: "1000",
+              zIndex: "500",
               pointerEvents: "none",
             }}
           ></div>
@@ -384,10 +426,11 @@ export default function Game(props) {
           <div className="postgame-header">
             Well done! You found all of the characters in {formattedTimer}.
           </div>
-          {props.mapInView.gameSessions.length === 0 && (
+          {mapInView.gameSessions.length === 0 && (
             <div>
               <div className="postgame-subheading-noscores">
-                No scores have been recorded for {props.mapInView.name}.
+                No scores have been recorded for{" "}
+                <span style={{ fontWeight: "600" }}>{mapInView.name}</span>.
               </div>
               <div className="postgame-subheading">
                 Enter your name to record your score. Leave blank to save
@@ -396,7 +439,12 @@ export default function Game(props) {
               <form action={handleScoreSubmission} className="score-submit">
                 <div className="username-entry">
                   <label htmlFor="username">Name:</label>
-                  <input type="text" name="username" id="username" />
+                  <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    maxLength="15"
+                  />
                 </div>
 
                 <button type="submit" className="submit-btn">
@@ -405,11 +453,11 @@ export default function Game(props) {
               </form>
             </div>
           )}
-          {props.mapInView.gameSessions.length > 0 && (
+          {mapInView.gameSessions.length > 0 && (
             <div className="scoreboard">
               <div className="scoreboard-heading">Top Scores</div>
               <div className="score-container">
-                {props.mapInView.gameSessions.map((score, index) => {
+                {mapInView.gameSessions.map((score, index) => {
                   return (
                     <div className="score" key={index}>
                       <div className="trophy">
@@ -484,7 +532,7 @@ export default function Game(props) {
             backgroundColor: "white",
             borderRadius: "10px",
             padding: "20px",
-            zIndex: "1000",
+            zIndex: "500",
             boxShadow: "rgba(0, 0, 0, 0.85) 0px 5px 15px",
           }}
           className="turn-result"
@@ -510,7 +558,7 @@ export default function Game(props) {
             backgroundColor: "white",
             borderRadius: "10px",
             padding: "20px",
-            zIndex: "1000",
+            zIndex: "500",
             boxShadow: "rgba(0, 0, 0, 0.85) 0px 5px 15px",
           }}
           className="turn-result"

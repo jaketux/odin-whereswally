@@ -1,7 +1,19 @@
 import MapCard from "../Components/MapCard";
+import { useEffect } from "react";
 
 export default function MapSelect(props) {
-  const { mapStorage, setMapInView, setPageView } = props;
+  const { mapStorage, setMapInView, setPageView, setShowLoading } = props;
+
+  useEffect(() => {
+    let loadTime;
+    if (mapStorage.length > 0) {
+      loadTime = setTimeout(() => {
+        setShowLoading(false);
+      }, 300);
+    }
+
+    return () => clearTimeout(loadTime);
+  }, [mapStorage]);
 
   return (
     <div className="map-select">

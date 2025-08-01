@@ -80,6 +80,8 @@ const gameController = {
         turnResult: "Found",
         gameSessionId: currentGameSessionId,
         gameResult: this.checkWinner(updatedCharacters),
+        coordinatesLeft: coordinates[0],
+        coordinatesTop: coordinates[2],
       };
     } else {
       return {

@@ -5,12 +5,10 @@ import MapSelect from "../Components/MapSelect";
 import Game from "../Components/Game";
 import Scoreboard from "../Components/Scoreboard";
 import Instructions from "../Components/Instructions";
+import Loading from "../Components/Loading";
+import Errors from "../Components/Errors";
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  const [refreshCounter, setRefreshCounter] = useState(0);
-
   const [mapStorage, setMapStorage] = useState([]);
 
   const [currentError, setCurrentError] = useState(false);
@@ -21,7 +19,17 @@ function App() {
 
   const [mapInView, setMapInView] = useState(null);
 
-  const [instructionsView, setInstructionsView] = useState(true);
+  const [instructionsView, setInstructionsView] = useState(false);
+
+  const [isRunning, setIsRunning] = useState(false);
+
+  const [gameStart, setGameStart] = useState(false);
+
+  const [foundCharacters, setFoundCharacters] = useState([]);
+
+  const [showFoundCharacters, setShowFoundCharacters] = useState(false);
+
+  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://wheres-wally-node-backend-production.up.railway.app/map", {
@@ -41,44 +49,79 @@ function App() {
       .catch((error) => {
         setCurrentError(true);
         setErrorInView(error);
-      });
+      })
+      .finally(() => setShowLoading(false));
   }, []);
 
   function returnHome() {
     setPageView("mapSelection");
     setMapInView(null);
-    // do something here about ending the current game session / stoppping timers, all that jazz
-    return;
+    setInstructionsView(false);
+    setIsRunning(false);
+    setGameStart(false);
+    setFoundCharacters([]);
+    setShowFoundCharacters(false);
   }
 
   function viewScoreBoard() {
     setPageView("scoreBoardSelected");
     setMapInView(null);
+    setFoundCharacters([]);
+    setShowFoundCharacters(false);
+    setInstructionsView(false);
+  }
+
+  function viewInstructions() {
+    setInstructionsView(true);
+    setIsRunning(false);
+    setFoundCharacters([]);
+    setShowFoundCharacters(false);
   }
 
   return (
     <>
-      <Header returnHome={returnHome} viewScoreBoard={viewScoreBoard} />
+      <Header
+        returnHome={returnHome}
+        viewScoreBoard={viewScoreBoard}
+        viewInstructions={viewInstructions}
+      />
+      {currentError && <Errors errorInView={errorInView} />}
       {pageView === "mapSelection" && (
         <MapSelect
           mapStorage={mapStorage}
           setMapInView={setMapInView}
           setPageView={setPageView}
+          setShowLoading={setShowLoading}
         />
       )}
       {pageView === "gameSelected" && (
         <Game
+          isRunning={isRunning}
+          setIsRunning={setIsRunning}
           mapInView={mapInView}
           setCurrentError={setCurrentError}
           setErrorInView={setErrorInView}
           setMapStorage={setMapStorage}
           viewScoreBoard={viewScoreBoard}
+          gameStart={gameStart}
+          setGameStart={setGameStart}
+          foundCharacters={foundCharacters}
+          setFoundCharacters={setFoundCharacters}
+          showFoundCharacters={showFoundCharacters}
+          setShowFoundCharacters={setShowFoundCharacters}
         />
       )}
       {pageView === "scoreBoardSelected" && (
         <Scoreboard mapStorage={mapStorage} />
       )}
-      {instructionsView && <Instructions />}
+      {instructionsView && (
+        <Instructions
+          setInstructionsView={setInstructionsView}
+          gameStart={gameStart}
+          setIsRunning={setIsRunning}
+        />
+      )}
+      {showLoading && <Loading />}
     </>
   );
 }
