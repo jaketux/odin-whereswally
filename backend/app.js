@@ -2,7 +2,12 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://wheres-wally-production.up.railway.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
