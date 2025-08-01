@@ -32,7 +32,7 @@ function App() {
   const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://wheres-wally-node-backend-production.up.railway.app/map", {
+    fetch("https://wheres-wally-node-backend-production.up.railway.app/map", {
       method: "GET",
     })
       .then(async (res) => {
