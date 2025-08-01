@@ -50,7 +50,9 @@ function App() {
         setCurrentError(true);
         setErrorInView(error);
       })
-      .finally(() => setShowLoading(false));
+      .finally(() => {
+        setTimeout(() => setShowLoading(false), 400);
+      });
   }, []);
 
   function returnHome() {
