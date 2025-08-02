@@ -34,6 +34,7 @@ function App() {
   useEffect(() => {
     fetch("https://wheres-wally-node-backend-production.up.railway.app/map", {
       method: "GET",
+      headers: {},
     })
       .then(async (res) => {
         const data = await res.json();
@@ -51,7 +52,7 @@ function App() {
         setErrorInView(error);
       })
       .finally(() => {
-        setTimeout(() => setShowLoading(false), 400);
+        setTimeout(() => setShowLoading(false), 1500);
       });
   }, []);
 
