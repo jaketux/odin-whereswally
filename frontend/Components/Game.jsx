@@ -242,6 +242,8 @@ export default function Game(props) {
     setFormattedTimer("0:00");
     setShowPostGame(false);
     setTurnResult(null);
+    setFoundCharacters([]);
+    setShowFoundCharacters(false);
   }
 
   //Removes selection marker if user clicks outside the map
